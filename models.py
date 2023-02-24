@@ -1,8 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
-bcrpyt = Bcrypt()
 db = SQLAlchemy()
+
+bcrpyt = Bcrypt()
 
 def connect_db(app):
     """Connect to database."""
@@ -18,21 +19,32 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True, primary_key=True)
     password = db.Column(db.String(16), nullable=False)
-    email = db.Column(db.String, nullable=False, unique=True)
     
-class Breed(db.Model):
-    """Breeds Table"""
+    @classmethod
+    def register(cls, username, pwd):
+        """Register user w/hashed password & return user."""
 
-    __tablename__ = "breeds"
+        hashed = bcrypt.generate_password_hash(pwd)
+        # turn bytestring into normal (unicode utf8) string
+        hashed_utf8 = hashed.decode("utf8")
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+        # return instance of user w/username and hashed pwd
+        return cls(username=username, password=hashed_utf8)
+    # end_register
 
-class Fact(db.Model):
-    """Fact Table"""
+    # start_authenticate
+    @classmethod
+    def authenticate(cls, username, pwd):
+        """Validate that user exists & password is correct.
 
-    __tablename__ = "facts"
+        Return user if valid; else return False.
+        """
 
-    id = db.Column(db.Integer, primary_key=True)
-    breed_id = db.Column(db.Integer, db.ForeignKey('breeds.id'))
-    life_span = db.column(db.Integer)
+        u = User.query.filter_by(username=username).first()
+
+        if u and bcrypt.check_password_hash(u.password, pwd):
+            # return user instance
+            return u
+        else:
+            return False
+    # end_authenticate   

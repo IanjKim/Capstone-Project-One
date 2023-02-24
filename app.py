@@ -1,6 +1,7 @@
 from flask import Flask, request, redirect, render_template, session, g
-from models import db, connect_db, User, Breed, Fact
-# from forms import RegisterForm, LoginForm, SearchBreed
+from models import db, connect_db, User
+from forms import RegisterForm, LoginForm, SearchBreed
+from sqlalchemy.exc import IntegrityError
 import requests
 
 CURRENT_USER_KEY = "current_user"
@@ -43,7 +44,34 @@ def do_logout():
 def homepage():
     """Homepage"""
 
-    return render_template('home.html')
+    if g.user:
+
+        return render_template('home.html')
+    
+    else:
+        return render_template('index.html')
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """Register user: produce form & handle form submission."""
+
+    form = RegisterForm()
+
+    if form.validate_on_submit():
+        name = form.username.data
+        pwd = form.password.data
+
+        user = User.register(name, pwd)
+        db.session.add(user)
+        db.session.commit()
+
+        session["user_id"] = user.id
+
+        # on successful login, redirects to homepage
+        return redirect("/")
+
+    else:
+        return render_template("login.html", form=form)
 
 @app.route('/breeds', methods=['GET'])
 def show_breeds():
