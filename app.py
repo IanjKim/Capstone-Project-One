@@ -79,6 +79,12 @@ def show_breeds():
 
     return render_template('breeds.html')
 
+@app.route('/breed/<string:dog_name>', methods=['GET'])
+def show_specific_breed(dog_name):
+    """Shows specific breeds and information about the dog"""
+
+    return render_template('breed.html', dog=dog_name)
+
 @app.route('/search', methods=['GET'])
 def search_breed():
     """Search for dog breeds"""

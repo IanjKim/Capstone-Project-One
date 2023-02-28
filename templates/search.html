@@ -1,7 +1,23 @@
-<!-- {% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block body_class %}The Dog Wiki{% endblock %}
-    
+
 {% block content %}
 
-{% endblock %} -->
+<h2>Search for a dog breed</h2>
+
+<div class="flex-col">
+  <input id="search" type="text">
+  <button class="button top_margin" onclick="searchBreed()">Find my dog!</button>
+</div>
+
+<div class="top_margin">
+  <ul id="search-result">
+
+  </ul>
+</div>
+
+<script src="https://unpkg.com/axios/dist/axios.js"></script>
+<script src="../static/javascript/breedSearch.js"></script>
+
+{% endblock %}
