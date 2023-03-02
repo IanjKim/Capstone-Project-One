@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, session, g
+from flask import Flask, request, redirect, render_template, session, g, jsonify
 from models import db, connect_db, User
 from forms import RegisterForm, LoginForm, SearchBreed
 from sqlalchemy.exc import IntegrityError
@@ -51,27 +51,44 @@ def homepage():
     else:
         return render_template('index.html')
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route('/register', methods=["GET", "POST"])
 def register():
-    """Register user: produce form & handle form submission."""
+    """Handle user registration."""
 
     form = RegisterForm()
 
     if form.validate_on_submit():
-        name = form.username.data
-        pwd = form.password.data
+        try:
+            user = User.register(
+                username=form.username.data,
+                password=form.password.data,
+            )
+            db.session.commit()
 
-        user = User.register(name, pwd)
-        db.session.add(user)
-        db.session.commit()
+        except IntegrityError:
+            return render_template('register.html', form=form)
 
-        session["user_id"] = user.id
+        do_login(user)
 
-        # on successful login, redirects to homepage
         return redirect("/")
 
     else:
-        return render_template("login.html", form=form)
+        return render_template('register.html', form=form)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Handle user login."""
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.authenticate_user(form.username.data, form.password.data)
+
+        if user:
+            do_login(user)
+            return redirect('/')
+        
+    return render_template('login.html', form=form)
 
 @app.route('/breeds', methods=['GET'])
 def show_breeds():
