@@ -12,29 +12,31 @@ def connect_db(app):
     db.init_app(app)
 
 class User(db.Model):
-    """User Table"""
 
-    __tablename__ = "users"
+    __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), nullable=False, unique=True, primary_key=True)
-    password = db.Column(db.String(16), nullable=False)
-    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    username = db.Column(db.Text, nullable=False,  unique=True)
+
+    password = db.Column(db.Text, nullable=False)
+
     @classmethod
-    def register(cls, username, pwd):
-        """Register user w/hashed password & return user."""
+    def register(cls, username, password):
+        """Register user with hased password and return user."""
 
-        hashed = bcrypt.generate_password_hash(pwd)
-        # turn bytestring into normal (unicode utf8) string
-        hashed_utf8 = hashed.decode("utf8")
+        hashed_password = bcrpyt.generate_password_hash(password).decode('utf8')
+        
+        user = User(
+            username=username,
+            password=hashed_password
+        )
 
-        # return instance of user w/username and hashed pwd
-        return cls(username=username, password=hashed_utf8)
-    # end_register
+        db.session.add(user)
+        return user
 
-    # start_authenticate
     @classmethod
-    def authenticate(cls, username, pwd):
+    def authenticate(cls, username, password):
         """Validate that user exists & password is correct.
 
         Return user if valid; else return False.
@@ -42,9 +44,9 @@ class User(db.Model):
 
         u = User.query.filter_by(username=username).first()
 
-        if u and bcrypt.check_password_hash(u.password, pwd):
+        if u and Bcrypt.check_password_hash(u.password, password):
             # return user instance
             return u
         else:
             return False
-    # end_authenticate   
+
