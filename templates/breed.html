@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block body_class %}The Dog Wiki{% endblock %}
+
+{% block content %}
+
+<h1 id="breed">{{dog}}</h1>
+
+<div class="top_margin" id="image">
+  
+</div>
+
+<div class="top_margin" id="facts_section">
+  <h1>Facts about {{ dog }}</h1>
+
+  <h3 class="top_margin">Origin</h3>
+  <p id="bred-for"></p>
+
+  <h3 class="top_margin">Breed group</h3>
+  <p id="breed-group"></p>
+  
+  <h3 class="top_margin">Average life span</h3>
+  <p id="life-span"></p>
+  
+  <h3 class="top_margin">Traits</h3>
+  <p id="traits"></p>
+
+  <h3 class="top_margin">Average height</h3>
+  <p id="height-imperial"></p><p id="height-metric"></p>
+
+  <h3 class="top_margin">Average weight</h3>
+  <p id="weight-imperial"></p><p id="weight-metric"></p>
+
+</div>
+
+<script src="https://unpkg.com/axios/dist/axios.js"></script>
+<script src="../static/javascript/searchDog.js"></script>
+{% endblock %}
