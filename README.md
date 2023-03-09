@@ -1,7 +1,6 @@
 This capstone one project will be a dog wikipedia
 
 The API I will be using for this project will be called The Dog API - https://thedogapi.com/
-It will also use The wikipedia API - https://en.wikipedia.org/w/api.php
 
 The project will be using HTML, CSS, JavaScript as a front end, Python, Flask as backend, and PostgreSQL as database.
 
