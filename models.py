@@ -3,7 +3,8 @@ from flask_bcrypt import Bcrypt
 
 db = SQLAlchemy()
 
-bcrpyt = Bcrypt()
+bcrypt = Bcrypt()
+
 
 def connect_db(app):
     """Connect to database."""
@@ -11,32 +12,39 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
 
+
 class User(db.Model):
+    """Site user."""
 
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, 
+                   primary_key=True, 
+                   autoincrement=True)
 
-    username = db.Column(db.Text, nullable=False,  unique=True)
+    username = db.Column(db.Text, 
+                         nullable=False, 
+                         unique=True)
 
-    password = db.Column(db.Text, nullable=False)
+    password = db.Column(db.Text, 
+                         nullable=False)
 
+    # start_register
     @classmethod
-    def register(cls, username, password):
-        """Register user with hased password and return user."""
+    def register(cls, username, pwd):
+        """Register user w/hashed password & return user."""
 
-        hashed_password = bcrpyt.generate_password_hash(password).decode('utf8')
-        
-        user = User(
-            username=username,
-            password=hashed_password
-        )
+        hashed = bcrypt.generate_password_hash(pwd)
+        # turn bytestring into normal (unicode utf8) string
+        hashed_utf8 = hashed.decode("utf8")
 
-        db.session.add(user)
-        return user
+        # return instance of user w/username and hashed pwd
+        return cls(username=username, password=hashed_utf8)
+    # end_register
 
+    # start_authenticate
     @classmethod
-    def authenticate(cls, username, password):
+    def authenticate(cls, username, pwd):
         """Validate that user exists & password is correct.
 
         Return user if valid; else return False.
@@ -44,9 +52,9 @@ class User(db.Model):
 
         u = User.query.filter_by(username=username).first()
 
-        if u and Bcrypt.check_password_hash(u.password, password):
+        if u and bcrypt.check_password_hash(u.password, pwd):
             # return user instance
             return u
         else:
             return False
-
+    # end_authenticate    

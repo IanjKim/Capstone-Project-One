@@ -51,30 +51,27 @@ def homepage():
     else:
         return render_template('index.html')
 
-@app.route('/register', methods=["GET", "POST"])
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    """Handle user registration."""
+    """Register user: produce form & handle form submission."""
 
     form = RegisterForm()
 
     if form.validate_on_submit():
-        try:
-            user = User.register(
-                username=form.username.data,
-                password=form.password.data,
-            )
-            db.session.commit()
+        name = form.username.data
+        pwd = form.password.data
 
-        except IntegrityError:
-            return render_template('register.html', form=form)
+        user = User.register(name, pwd)
+        db.session.add(user)
+        db.session.commit()
 
-        do_login(user)
+        session["user_id"] = user.id
 
         return redirect("/")
 
     else:
-        return render_template('register.html', form=form)
-
+        return render_template("register.html", form=form)
+    
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Handle user login."""
