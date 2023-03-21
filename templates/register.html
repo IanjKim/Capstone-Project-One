@@ -1,27 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1 class="display-4">Register</h1>
-<p class="lead">Register for our site.</p>
+<h2>Register for our site</h2>
 
-<form method="POST">
-
+<form class="top_padding flex-col" method="POST">
   {{ form.hidden_tag() }}
 
-  {% for field in form
-  if field.widget.input_type != 'hidden' %}
-  <p>
-    {{ field.label }}
-    {{ field }}
-
+  {% for field in form if field.widget.input_type != 'hidden' %}
     {% for error in field.errors %}
-    {{ error }}
+          <span>{{ error }}</span>
     {% endfor %}
-  </p>
+    {{ field(placeholder=field.label.text, class="form-control") }}
   {% endfor %}
 
-  <button type="submit">Register</button>
-
+  <button class="button top_margin">Sign me up!</button>
 </form>
+
+<div class="top_padding">
+  <img id="register" src="../static/image/register.png" alt="cute dog picture for register page">
+</div>
 
 {% endblock %}

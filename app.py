@@ -2,7 +2,6 @@ from flask import Flask, request, redirect, render_template, session, g, jsonify
 from models import db, connect_db, User
 from forms import RegisterForm, LoginForm, SearchBreed
 from sqlalchemy.exc import IntegrityError
-import requests
 
 CURRENT_USER_KEY = "current_user"
 
@@ -79,13 +78,21 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        user = User.authenticate_user(form.username.data, form.password.data)
+        user = User.authenticate(form.username.data, form.password.data)
 
         if user:
             do_login(user)
             return redirect('/')
         
     return render_template('login.html', form=form)
+
+@app.route('/logout')
+def logout():
+    """Handle logout of user."""
+    
+    do_logout()
+
+    return redirect("/login")
 
 @app.route('/breeds', methods=['GET'])
 def show_breeds():
